@@ -41,7 +41,7 @@
 
 typedef struct s_oppenssl
 {
-	char	*texat;
+	char	*texa t;
 	int		type;
 }	t_openssl;
 
