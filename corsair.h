@@ -38,9 +38,10 @@
 # include <openssl/x509.h>
 # include <openssl/x509v3.h>
 
+
 typedef struct s_oppenssl
 {
-	char	*text;
+	char	*texat;
 	int		type;
 }	t_openssl;
 
