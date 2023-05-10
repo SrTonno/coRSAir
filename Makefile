@@ -30,7 +30,7 @@ all: ${NAME}
 
 ${NAME}: ${OBJS}
 	@${CC} ${CFLAGS} ${LDLIBS} ${OBJS} -o $@
-	@echo "${God}${Green}Created '${NAME}'.${NoColor}"
+	@echo "${Good}${Green}Created '${NAME}'.${NoColor}"
 
 
 
@@ -63,7 +63,7 @@ setup:
 	#echo 'export PATH=$$HOME/goinfre/.brew/bin:$$PATH' >> $$HOME/.zshrc && source $$HOME/.zshrc
 	@brew update
 	@brew install openssl@1.1
-	@printf "${God}${BICyan}Install brew and library in MAC.${God} "
+	@printf "${Good}${BICyan}Install brew and library in MAC.${Good} "
 
 
 help:
