@@ -18,7 +18,7 @@ t_openssl *read_public_key(const char *file)
 	BIO *bio = NULL; // Estructura BIO para leer el archivo
 	RSA *rsa_key = NULL; // Clave RSA
 
-	printf("Clave publica %s\n", file);
+	//printf("Clave publica %s\n", file);
 	stats = malloc(1  * sizeof(t_openssl));
 	stats->file = file;
 	n = BN_new();
@@ -63,30 +63,53 @@ void print_info(t_openssl *ssl)
 	printf("e: %s\n", e_hex); // Imprimir el componente e en hexadecimal
 	OPENSSL_free(ssl->n_hex); // Liberar la memoria asignada a la cadena n_hex
 	OPENSSL_free(ssl->e_hex); // Liberar la memoria asignada a la cadena e_hex
+} 
+
+void calcular_clave_privada(BIGNUM *p ,BIGNUM *q)
+{
+	BIGNUM	*n = NB_new();
+	BIGNUM	*z = NB_new();
+	BN_CTX	*ctx = BN_CTX_new();
+	BIGNUM	*temp1 = BN_new();
+	BIGNUM	*temp2 = BN_new();
+
+	//Calc n
+	BN_mul(n, p, q, ctx);
+
+	//calc z
+	BN_sub(temp1, q, BN_value_one());
+	BN_sub(temp2, p, BN_value_one());
+	BN_mul(z, temp1, temp2, ctx);
+
+
+
+	BN_free(z);
+	BN_free(temp1);
+	BN_free(temp2);
 }
 void common_divisor(t_openssl **list)
 {
 	int			i, j;
 	BIGNUM		*result;
 	char 		*result_str;
-	char		*n_hex, *e_hex;
+	char		*n_hex, *e_hex; 
 	int 		tot;
+	BN_CTX		*ctx = BN_CTX_new();
 
-	i = -1;
+	i = -1; 
 	tot = 0;
 	result = BN_new();
-	while (list[++i] != NULL)//hacer un doble bucle
+	while (list[++i] != NULL)
 	{
 		j = i;
 		while (list[++j] != NULL)
 		{
-			BN_gcd(result, list[i]->n, list[j]->n, BN_CTX_new());
+			BN_gcd(result, list[i]->n, list[j]->n, ctx);
 			result_str = BN_bn2dec(result);
-	    	if (strncmp(result_str, "1", 1) == 1 || strlen(result_str) != 1)
-			//if (atoi(result_str) != 1)
+			if (strncmp(result_str, "1", 1) == 1 || strlen(result_str) != 1)
 			{
-				print_info(list[i]);
-				printf("%s -> El máximo común divisor es: %s\n",list[i]->file, result_str);
+				//print_info(list[i]);
+				printf("%s y %s -> El máximo común divisor es: %s\n",list[i]->file, list[j]->file, result_str);
 				tot++;
 			}
 		}
@@ -112,18 +135,5 @@ int main(int argc, char **argv)
 	list[i] = NULL;
 	i = -1;
 	common_divisor(list);
-	/*while (list[++i] != NULL)
-	{
-		//n_hex = BN_bn2hex(list[i]->n); // Convertir el componente n a formato hexadecimal
-		//e_hex = BN_bn2hex(list[i]->e); // Convertir el componente e a formato hexadecimal
-		printf("n: %s\n", list[i]->n_hex); // Imprimir el componente n en hexadecimal
-		printf("e: %s\n", list[i]->e_hex); // Imprimir el componente e en hexadecimal
-		OPENSSL_free(n_hex); // Liberar la memoria asignada a la cadena n_hex
-		OPENSSL_free(e_hex); // Liberar la memoria asignada a la cadena e_hex
-		BN_gcd(result, list[i]->n, list[i + 1]->n, BN_CTX_new());
-		
-		result_str = BN_bn2dec(list[i]->n);
-	    printf("El máximo común divisor es: %s\n", result_str);
-	}*/
 	return (0);
 }
