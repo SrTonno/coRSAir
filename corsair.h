@@ -42,8 +42,8 @@
 typedef struct s_oppenssl
 {
 	const char		*file;
-	const BIGNUM	*n;		// Punteros a los componentes n y e de la clave RSA
-	const BIGNUM	*e;
+	BIGNUM	*n;		// Punteros a los componentes n y e de la clave RSA
+	BIGNUM	*e;
 	char			*n_hex; // Cadenas para almacenar los componentes n y e en formato hexadecimal
 	char			*e_hex;
 }	t_openssl;

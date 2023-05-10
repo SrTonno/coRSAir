@@ -1,7 +1,6 @@
 
 #include "corsair.h"
 
-
 void free_openssl(char *n_hex, char *e_hex, BIO *bio, RSA *rsa_key)
 {
 	//OPENSSL_free(n_hex); // Liberar la memoria asignada a la cadena n_hex
@@ -14,7 +13,7 @@ void free_openssl(char *n_hex, char *e_hex, BIO *bio, RSA *rsa_key)
 
 t_openssl *read_public_key(const char *file)
 {
-	//const BIGNUM *n, *e; // Punteros a los componentes n y e de la clave RSA
+	const BIGNUM *n, *e; // Punteros a los componentes n y e de la clave RSA
 	t_openssl	*stats;
 	BIO *bio = NULL; // Estructura BIO para leer el archivo
 	RSA *rsa_key = NULL; // Clave RSA
@@ -22,6 +21,9 @@ t_openssl *read_public_key(const char *file)
 	printf("Clave publica %s\n", file);
 	stats = malloc(1  * sizeof(t_openssl));
 	stats->file = file;
+	n = BN_new();
+	e = BN_new();
+
 	//OpenSSL_add_all_algorithms(); // Inicializar los algoritmos de OpenSSL
 	//ERR_load_crypto_strings(); // Cargar los mensajes de error de OpenSSL
 	bio = BIO_new_file(file, "r"); // Crear una estructura BIO para leer el archivo
@@ -38,38 +40,58 @@ t_openssl *read_public_key(const char *file)
 		exit(EXIT_FAILURE);
 	}
 
-	RSA_get0_key(rsa_key, &stats->n, &stats->e, NULL); // Obtener los componentes n y e de la clave RSA
+	RSA_get0_key(rsa_key, &n, &e, NULL); // Obtener los componentes n y e de la clave RSA
 
-	stats->n_hex = BN_bn2hex(stats->n); // Convertir el componente n a formato hexadecimal
-	stats->e_hex = BN_bn2hex(stats->e); // Convertir el componente e a formato hexadecimal
-	printf("n: %s\n", stats->n_hex); // Imprimir el componente n en hexadecimal
-	printf("e: %s\n", stats->e_hex); // Imprimir el componente e en hexadecimal
+	stats->n_hex = BN_bn2hex(n); // Convertir el componente n a formato hexadecimal
+	stats->e_hex = BN_bn2hex(e); // Convertir el componente e a formato hexadecimal
+	stats->n = BN_dup(n);
+	stats->e = BN_dup(e);
+	//printf("n: %s\n", stats->n_hex); // Imprimir el componente n en hexadecimal
+	//printf("e: %s\n", stats->e_hex); // Imprimir el componente e en hexadecimal*/
 
 	free_openssl(stats->n_hex, stats->e_hex, bio, rsa_key);
+	//BN_free(n);
+	//BN_free(e);
 	return (stats);
 }
-
+void print_info(t_openssl *ssl)
+{
+	char		*n_hex, *e_hex;
+	n_hex = BN_bn2hex(ssl->n); // Convertir el componente n a formato hexadecimal
+	e_hex = BN_bn2hex(ssl->e); // Convertir el componente e a formato hexadecimal
+	printf("n: %s\n", n_hex); // Imprimir el componente n en hexadecimal
+	printf("e: %s\n", e_hex); // Imprimir el componente e en hexadecimal
+	OPENSSL_free(ssl->n_hex); // Liberar la memoria asignada a la cadena n_hex
+	OPENSSL_free(ssl->e_hex); // Liberar la memoria asignada a la cadena e_hex
+}
 void common_divisor(t_openssl **list)
 {
-	int	i;
+	int			i, j;
 	BIGNUM		*result;
 	char 		*result_str;
 	char		*n_hex, *e_hex;
-
+	int 		tot;
 
 	i = -1;
-	while (list[++i] != NULL)
+	tot = 0;
+	result = BN_new();
+	while (list[++i] != NULL)//hacer un doble bucle
 	{
-		//n_hex = BN_bn2hex(list[i]->n); // Convertir el componente n a formato hexadecimal
-		//e_hex = BN_bn2hex(list[i]->e); // Convertir el componente e a formato hexadecimal
-		printf("n: %s\n", list[i]->n_hex); // Imprimir el componente n en hexadecimal
-		printf("e: %s\n", list[i]->e_hex); // Imprimir el componente e en hexadecimal
-		OPENSSL_free(list[i]->n_hex); // Liberar la memoria asignada a la cadena n_hex
-		OPENSSL_free(list[i]->e_hex); // Liberar la memoria asignada a la cadena e_hex
-		BN_gcd(result, list[i]->n, list[i + 1]->n, BN_CTX_new());
-		result_str = BN_bn2dec(list[i]->n);
-	    printf("El máximo común divisor es: %s\n", result_str);
+		j = i;
+		while (list[++j] != NULL)
+		{
+			BN_gcd(result, list[i]->n, list[j]->n, BN_CTX_new());
+			result_str = BN_bn2dec(result);
+	    	if (strncmp(result_str, "1", 1) == 1 || strlen(result_str) != 1)
+			//if (atoi(result_str) != 1)
+			{
+				print_info(list[i]);
+				printf("%s -> El máximo común divisor es: %s\n",list[i]->file, result_str);
+				tot++;
+			}
+		}
 	}
+	printf("%d\n", tot);
 }
 
 int main(int argc, char **argv)
