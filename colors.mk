@@ -72,5 +72,5 @@
 	On_IWhite=\033[0;107m
 
 #Emotes
-	God = 🍺
+	Good = 🍺
 	Bad = ❌
