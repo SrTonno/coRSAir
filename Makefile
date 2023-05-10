@@ -33,12 +33,6 @@ ${NAME}: ${OBJS}
 	@echo "${God}${Green}Created '${NAME}'.${NoColor}"
 
 
-git: fclean
-	@echo "\t>>Push To Git<<"
-	@git add . ;
-	@read -p "Name the commit (One Word): " commit ;\
-	git commit -m $$commit ;\
-	git push origin master ;
 
 
 .c.o:
@@ -55,6 +49,23 @@ fclean: clean
 
 re: fclean all
 
+###############################################################################
+
+git: fclean
+	@echo "\t>>Push To Git<<"
+	@git add . ;
+	@read -p "Name the commit (One Word): " commit ;\
+	git commit -m $$commit ;\
+	git push origin master ;
+
+setup:
+	@rm -rf $$HOME/.brew && git clone https://github.com/Homebrew/brew $$HOME/goinfre/.brew
+	#echo 'export PATH=$$HOME/goinfre/.brew/bin:$$PATH' >> $$HOME/.zshrc && source $$HOME/.zshrc
+	@brew update
+	@brew install openssl@1.1
+	@printf "${God}${BICyan}Install brew and library in MAC.${God} "
+
+
 help:
 	@echo "${UGreen}Options of MakeFile:${NoColor}"
 	@echo "Used: make [options]"
@@ -65,4 +76,4 @@ help:
 	@echo "\t${BIPurple}git:${NoColor} Push to git."
 	@echo "MakeFile by ${UBlue}tvillare${NoColor}."
 
-.PHONY = all clean fclean re help git normi
+.PHONY = all clean fclean re help git normi setup
