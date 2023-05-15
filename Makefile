@@ -2,7 +2,7 @@ include colors.mk
 ###############################################################################
 #                                              FILES                          #
 ###############################################################################
-CFILE	=	corsair.c
+CFILE	=	corsair.c create_private.c decrypt_file.c
 OBJS	=	${CFILE:.c=.o}
 
 ###############################################################################
@@ -31,8 +31,6 @@ all: ${NAME}
 ${NAME}: ${OBJS}
 	@${CC} ${CFLAGS} ${LDLIBS} ${OBJS} -o $@
 	@echo "${Good}${Green}Created '${NAME}'.${NoColor}"
-
-
 
 
 .c.o:

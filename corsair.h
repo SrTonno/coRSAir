@@ -46,4 +46,8 @@ typedef struct s_oppenssl
 	BIGNUM	*e;
 }	t_openssl;
 
+void	calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, const char *file);
+int		desencrytar_fichero(RSA *key_rsa, const char *file);
+
+
 #endif
