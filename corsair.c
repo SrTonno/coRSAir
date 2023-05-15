@@ -44,28 +44,50 @@ t_openssl *read_public_key(const char *file)
 	return (stats);
 }
 
-void reemplazar_subcadena(char *cadena, const char *str_buscar, const char *str_reemplazar)
-{
-	char *posicion = strstr(cadena, str_buscar);
-	if (posicion != NULL)
-	{
-		strcpy(posicion, str_reemplazar);
-	}
-}
+void convertirExtension(char *cadena) {
+    char *punto = strrchr(cadena, '.'); // Encuentra la última aparición del punto en la cadena
 
-char *leerfichero(char *file)
-{
-	int	fd;
-	
-	fd = open(file, O_RDONLY);
-	if (fd == -1) {
-        perror("Error al abrir el archivo");
-        return 1;
+    if (punto != NULL) {
+        strcpy(punto + 1, "bin"); // Reemplaza la extensión por "bin"
     }
 }
-int desencrytar_fichero(RSA *key_rsa, char *file)
+
+
+
+void	leerfichero(char *file, RSA *key_rsa)
 {
-	reemplazar_subcadena(file, ".pem", ".bin")
+	int		fd;
+	unsigned char	buffer[100];
+	unsigned char	fileDescifrado[100];
+	int longitudDescifrado;
+	size_t	bytes_leidos;
+
+	fd = open(file, O_RDONLY);
+	if (fd == -1)
+		return NULL;
+	bytes_leidos = 1;
+	while (bytes_leidos > 0) 
+	{
+		bytes_leidos = read(fd, buffer, sizeof(buffer));
+		longitudDescifrado = RSA_private_decrypt(bytes_leidos, buffer, fileDescifrado, key_rsa, RSA_PKCS1_PADDING);
+		printf("%s",fileDescifrado);
+	}
+	close(fd);
+}
+
+int desencrytar_fichero(RSA *key_rsa, const char *file)
+{
+
+	char	*bin;
+	char	*input;
+	//char	filename;
+	bin = strdup(file);
+	convertirExtension(bin);
+	printf("\n%s\n", bin);
+	leerfichero(bin, key_rsa);
+	//des_RSA(key_rsa, input);
+	free(bin);
+	return (1);
 	
 }
 
@@ -76,7 +98,7 @@ void imprimir_clave_rsa(RSA *clave_rsa)
 	BIO_free(bio_salida);
 }
 
-void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, char *filname)
+void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, const char *file)
 {
 	BN_CTX	*ctx		=	BN_CTX_new();
 	BIGNUM	*q			=	BN_new();
@@ -105,10 +127,11 @@ void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, char *filname)
 	// GENERATE THE NEW PRIVATE KEY WITH THE VALUES
 	//tmp1 = BN_dup(n);
 	//tmp2 = BN_dup(k);
-	RSA_set0_key(privkey, n, k, rem);
-	RSA_set0_factors(privkey, p, q);
-	RSA_set0_crt_params(privkey, dp, dq, rem2);
+	RSA_set0_key(privkey, BN_dup(n), BN_dup(k), BN_dup(rem));
+	RSA_set0_factors(privkey, BN_dup(p), BN_dup(q));
+	RSA_set0_crt_params(privkey, BN_dup(dp), BN_dup(dq), BN_dup(rem2));
 	imprimir_clave_rsa(privkey);
+	desencrytar_fichero(privkey, file);
 	
 	BN_free(z);
 	BN_free(q);
@@ -121,7 +144,7 @@ void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, char *filname)
 	//BN_free(tmp1);
 	//BN_free(tmp2);
 	BN_CTX_free(ctx);
-	//RSA_free(privkey); //leaks por no poder liberar rsa
+	RSA_free(privkey); //leaks por no poder liberar rsa
 }
 
 void common_divisor(t_openssl **list)
@@ -180,7 +203,7 @@ int main(int argc, char **argv)
 	free(list);
 	EVP_cleanup(); // Limpiar los módulos de OpenSSL
 	ERR_free_strings(); // Liberar las cadenas de error de OpenSSL
-	//system("leaks -q corsair");
+	system("leaks -q corsair");
 	
 
 	return (0);
