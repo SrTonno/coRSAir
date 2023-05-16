@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "__locale": "c",
-        "*.inc": "c"
+        "*.inc": "c",
+        "corsair.h": "c"
     }
 }

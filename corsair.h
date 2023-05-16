@@ -33,6 +33,8 @@
 # include <openssl/pem.h>
 # include <openssl/pkcs12.h>
 # include <openssl/rsa.h>
+ #include <openssl/engine.h>
+
 
 # include <openssl/ssl.h>
 # include <openssl/x509.h>
