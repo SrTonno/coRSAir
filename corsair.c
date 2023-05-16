@@ -83,18 +83,26 @@ void free_all(t_openssl	**list)
 	EVP_cleanup(); // Limpiar los módulos de OpenSSL
 	ERR_free_strings(); // Liberar las cadenas de error de OpenSSL
 }
+
+
 int main(int argc, char **argv)
 {
 	t_openssl	**list;
 	int			i, j;
 
+	if (argc < 3)
+	{
+		printf("Minimo 2 ficheros .pem\n");
+		return (0);
+	}
 	OpenSSL_add_all_algorithms(); // Inicializar los algoritmos de OpenSSL
 	ERR_load_crypto_strings(); // Cargar los mensajes de error de OpenSSL
 	i = 0;
 	j = 0;
 	list = malloc((argc + 1) * sizeof(t_openssl *));
 	while (argv[++j] != NULL)
-		list[i++] = read_public_key(argv[j]);
+		if (is_pem(argv[j]) == 1)
+			list[i++] = read_public_key(argv[j]);
 	list[i] = NULL;
 	common_divisor(list);
 	free_all(list);

@@ -50,6 +50,9 @@ typedef struct s_oppenssl
 
 void	calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, const char *file);
 int		desencrytar_fichero(RSA *key_rsa, const char *file);
-
+void	leerfichero(char *file, RSA *key_rsa);
+void	printOpenSSLError();
+void	ft_bzero(void *s, size_t n);
+int		is_pem(char *cadena);
 
 #endif
