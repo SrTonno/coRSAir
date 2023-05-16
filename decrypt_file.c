@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   decrypt_file.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/16 17:16:35 by tvillare          #+#    #+#             */
+/*   Updated: 2023/05/16 17:35:01 by tvillare         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "corsair.h"
 
+static void	convertirExtension(char *cadena) {
+	char	*punto;
 
-void convertirExtension(char *cadena) {
-	char *punto = strrchr(cadena, '.'); // Encuentra la última aparición del punto en la cadena
-
+	punto= strrchr(cadena, '.'); // Encuentra la última aparición del punto en la cadena
 	if (punto != NULL)
 		strcpy(punto + 1, "bin"); // Reemplaza la extensión por "bin"
 }
@@ -11,14 +23,13 @@ void convertirExtension(char *cadena) {
 void	leerfichero(char *file, RSA *key_rsa)
 {
 	int				fd;
-	int				tmp;
 	unsigned char	buffer[129];
 	unsigned char	*input;
 	unsigned char	*fileDescifrado;
 	int				longitudDescifrado;
 	size_t			bytes_leidos;
+	size_t			tmp;
 
-	
 	bytes_leidos = 0;
 	tmp = 1;
 	fd = open(file, O_RDONLY);
@@ -44,9 +55,8 @@ void	leerfichero(char *file, RSA *key_rsa)
 	close(fd);
 }
 
-int desencrytar_fichero(RSA *key_rsa, const char *file)
+int	desencrytar_fichero(RSA *key_rsa, const char *file)
 {
-
 	char	*bin;
 	char	*input;
 
@@ -56,5 +66,4 @@ int desencrytar_fichero(RSA *key_rsa, const char *file)
 	leerfichero(bin, key_rsa);
 	free(bin);
 	return (1);
-	
 }

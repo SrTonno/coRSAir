@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   corsair.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/16 17:16:47 by tvillare          #+#    #+#             */
+/*   Updated: 2023/05/16 17:28:37 by tvillare         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "corsair.h"
 
@@ -8,13 +19,14 @@ void save_info(const BIGNUM *n, const BIGNUM *e, RSA *rsa_key, t_openssl *stats)
 	stats->n = BN_dup(n);
 	stats->e = BN_dup(e);
 }
+
 t_openssl *read_public_key(const char *file)
 {
-	BIGNUM 			*n			=	BN_new();
-	BIGNUM			*e			=	BN_new(); // Punteros a los componentes n y e de la clave RSA
-	BIO				*bio		=	NULL; // Estructura BIO para leer el archivo
-	RSA				*rsa_key	=	NULL; // Clave RSA
-	t_openssl		*stats;
+	BIGNUM 		*n			=	BN_new();
+	BIGNUM		*e			=	BN_new(); // Punteros a los componentes n y e de la clave RSA
+	BIO			*bio		=	NULL; // Estructura BIO para leer el archivo
+	RSA			*rsa_key	=	NULL; // Clave RSA
+	t_openssl	*stats;
 
 	stats = malloc(1  * sizeof(t_openssl));
 	bio = BIO_new_file(file, "r"); // Crear una estructura BIO para leer el archivo
@@ -24,7 +36,8 @@ t_openssl *read_public_key(const char *file)
 		exit(EXIT_FAILURE);
 	}
 	rsa_key = PEM_read_bio_RSA_PUBKEY(bio, &rsa_key, NULL, NULL); // Leer la clave pública RSA desde el archivo
-	if (rsa_key == NULL) {
+	if (rsa_key == NULL)
+	{
 		ERR_print_errors_fp(stderr); // Imprimir errores si la lectura de la clave falla
 		BIO_free_all(bio); // Liberar la estructura BIO
 		exit(EXIT_FAILURE);
@@ -35,19 +48,18 @@ t_openssl *read_public_key(const char *file)
 	BIO_free_all(bio); // Liberar la estructura BIO
 	BN_free(n);
 	BN_free(e);
-	
 	return (stats);
 }
 
-void common_divisor(t_openssl **list)
+static void common_divisor(t_openssl **list)
 {
-	int			i, j;
-	BIGNUM		*result;
-	char 		*result_str;
-	BN_CTX		*ctx	=	BN_CTX_new();
+	int		i;
+	int		j;
+	char 	*result_str;
+	BIGNUM	*result	=	BN_new();
+	BN_CTX	*ctx	=	BN_CTX_new();
 
-	i = -1; 
-	result = BN_new();
+	i = -1;
 	while (list[++i] != NULL)
 	{
 		j = i;
@@ -68,10 +80,11 @@ void common_divisor(t_openssl **list)
 	BN_free(result);
 	BN_CTX_free(ctx);
 }
-void free_all(t_openssl	**list)
+
+static void free_all(t_openssl	**list)
 {
 	int	i;
-	
+
 	i = -1;
 	while (list[++i] != NULL)
 	{
@@ -88,7 +101,8 @@ void free_all(t_openssl	**list)
 int main(int argc, char **argv)
 {
 	t_openssl	**list;
-	int			i, j;
+	int			i;
+	int			j;
 
 	if (argc < 3)
 	{

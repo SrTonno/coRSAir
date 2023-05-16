@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   create_private.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/16 17:16:39 by tvillare          #+#    #+#             */
+/*   Updated: 2023/05/16 17:22:51 by tvillare         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "corsair.h"
 
-void imprimir_clave_rsa(RSA *clave_rsa)
+static void imprimir_clave_rsa(RSA *clave_rsa)
 {
 	BIO *bio_salida = BIO_new_fp(stdout, BIO_NOCLOSE);
 	PEM_write_bio_RSAPrivateKey(bio_salida, clave_rsa, NULL, NULL, 0, NULL, NULL);
@@ -19,7 +31,7 @@ void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, const char *file)
 	BIGNUM	*rem		=	BN_new();
 	BIGNUM	*rem2 		=	BN_new();
 	RSA		*privkey	=	RSA_new();
-	
+
 	// CALCULATE THE OTHER PRIME NUMBER, AND OTHER VALUES NEEDED
 	BN_div(q, NULL, n, p, ctx);
 	BN_sub(tq, q, BN_value_one());
@@ -29,16 +41,15 @@ void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, const char *file)
 	BN_mod(dp, rem, tp, ctx);
 	BN_mod(dq, rem, tq, ctx);
 	BN_mod_inverse(rem2, q, p, ctx);
-	
-	
+
 	// GENERATE THE NEW PRIVATE KEY WITH THE VALUE
 	RSA_set0_key(privkey, BN_dup(n), BN_dup(k), BN_dup(rem));
 	RSA_set0_factors(privkey, BN_dup(p), BN_dup(q));
 	RSA_set0_crt_params(privkey, BN_dup(dp), BN_dup(dq), BN_dup(rem2));
     desencrytar_fichero(privkey, file);
 	imprimir_clave_rsa(privkey);
-	
-	
+
+
 	BN_free(z);
 	BN_free(q);
 	BN_free(tq);
