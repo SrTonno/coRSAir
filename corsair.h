@@ -6,7 +6,7 @@
 /*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/08 18:27:51 by tvillare          #+#    #+#             */
-/*   Updated: 2023/05/16 17:16:43 by tvillare         ###   ########.fr       */
+/*   Updated: 2023/05/27 16:02:51 by tvillare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,7 @@ void	leerfichero(char *file, RSA *key_rsa);
 void	printOpenSSLError();
 void	ft_bzero(void *s, size_t n);
 int		is_pem(char *cadena);
+void	free_all(t_openssl	**list);
+void	save_info(const BIGNUM *n, const BIGNUM *e, RSA *rsa_key, t_openssl *stats);
 
 #endif

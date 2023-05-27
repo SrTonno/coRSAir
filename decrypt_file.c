@@ -6,7 +6,7 @@
 /*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/16 17:16:35 by tvillare          #+#    #+#             */
-/*   Updated: 2023/05/16 17:35:01 by tvillare         ###   ########.fr       */
+/*   Updated: 2023/05/27 15:27:16 by tvillare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,10 @@ void	leerfichero(char *file, RSA *key_rsa)
 	tmp = 1;
 	fd = open(file, O_RDONLY);
 	if (fd == -1)
+	{
+		printf("Error: File not exist\n");
 		return ;
+	}
 	while (tmp > 0)
 	{
 		tmp = read(fd, buffer, 1);

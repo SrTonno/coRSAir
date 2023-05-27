@@ -6,7 +6,7 @@
 /*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/16 17:16:39 by tvillare          #+#    #+#             */
-/*   Updated: 2023/05/16 17:22:51 by tvillare         ###   ########.fr       */
+/*   Updated: 2023/05/16 17:49:43 by tvillare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ void calcular_clave_privada(BIGNUM *p ,BIGNUM *n, BIGNUM *k, const char *file)
 	RSA_set0_key(privkey, BN_dup(n), BN_dup(k), BN_dup(rem));
 	RSA_set0_factors(privkey, BN_dup(p), BN_dup(q));
 	RSA_set0_crt_params(privkey, BN_dup(dp), BN_dup(dq), BN_dup(rem2));
-    desencrytar_fichero(privkey, file);
+
+	desencrytar_fichero(privkey, file);
 	imprimir_clave_rsa(privkey);
 
 

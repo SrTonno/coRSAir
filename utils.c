@@ -6,7 +6,7 @@
 /*   By: tvillare <tvillare@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/16 17:17:16 by tvillare          #+#    #+#             */
-/*   Updated: 2023/05/16 17:31:29 by tvillare         ###   ########.fr       */
+/*   Updated: 2023/05/27 16:02:34 by tvillare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,28 @@ int	is_pem(char *cadena)
 		if (strncmp(punto, ".pem", 5) == 0)
 			return (1);
 	return (0);
+}
+
+void	save_info(const BIGNUM *n, const BIGNUM *e, RSA *rsa_key, t_openssl *stats)
+{
+	RSA_get0_key(rsa_key, &n, &e, NULL); // Obtener los componentes n y e de la clave RSA
+
+	stats->n = BN_dup(n);
+	stats->e = BN_dup(e);
+}
+
+void	free_all(t_openssl	**list)
+{
+	int	i;
+
+	i = -1;
+	while (list[++i] != NULL)
+	{
+		BN_free(list[i]->e);
+		BN_free(list[i]->n);
+		free(list[i]);
+	}
+	free(list);
+	EVP_cleanup(); // Limpiar los módulos de OpenSSL
+	ERR_free_strings(); // Liberar las cadenas de error de OpenSSL
 }
